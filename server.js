@@ -16,23 +16,8 @@ const app = express();
 // Security middleware
 app.use(helmet());
 
-// CORS configuration - allow all vercel subdomains
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-
-    // Allow all vercel.app subdomains and localhost
-    if (origin.includes('vercel.app') ||
-        origin.includes('localhost:5173') ||
-        origin.includes('localhost:3000')) {
-      return callback(null, true);
-    }
-
-    callback(new Error('Not allowed by CORS'));
-  },
-  credentials: true
-}));
+// CORS configuration - allow all origins
+app.use(cors());
 
 // Body parser
 app.use(express.json());
