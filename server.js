@@ -16,14 +16,21 @@ const app = express();
 // Security middleware
 app.use(helmet());
 
-// CORS configuration
+// CORS configuration - allow all vercel subdomains
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://portfolio-frontend-iqsuq2ccq-wqeqweqweqweqs-projects.vercel.app',
-    process.env.FRONTEND_URL
-  ].filter(Boolean),
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    // Allow all vercel.app subdomains and localhost
+    if (origin.includes('vercel.app') ||
+        origin.includes('localhost:5173') ||
+        origin.includes('localhost:3000')) {
+      return callback(null, true);
+    }
+
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 
