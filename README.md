@@ -4,8 +4,8 @@ A secure, robust, and scalable RESTful API built with Node.js, Express, and Mong
 
 ## Live Demo
 
-- **API URL**: [Your deployed API URL here]
-- **Frontend URL**: [Your deployed frontend URL here]
+- **API URL**: https://portfolio-backend-hgygo4lip-wqeqweqweqweqs-projects.vercel.app
+- **Frontend URL**: https://portfolio-frontend-p0m1ix0bl-wqeqweqweqweqs-projects.vercel.app
 
 ## Features
 
@@ -30,13 +30,58 @@ A secure, robust, and scalable RESTful API built with Node.js, Express, and Mong
 ## API Endpoints
 
 ### Authentication
+
 | Method | Endpoint | Description | Access |
 |--------|----------|-------------|--------|
 | POST | `/api/users/register` | Register a new user | Public |
 | POST | `/api/users/login` | Login and get JWT token | Public |
 | GET | `/api/users/profile` | Get user profile | Protected |
 
+#### Register User
+```http
+POST /api/users/register
+Content-Type: application/json
+
+{
+  "username": "johndoe",
+  "email": "john@example.com",
+  "password": "password123"
+}
+```
+
+**Response:**
+```json
+{
+  "_id": "user_id",
+  "username": "johndoe",
+  "email": "john@example.com",
+  "token": "jwt_token"
+}
+```
+
+#### Login User
+```http
+POST /api/users/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+```
+
+**Response:**
+```json
+{
+  "_id": "user_id",
+  "username": "johndoe",
+  "email": "john@example.com",
+  "token": "jwt_token"
+}
+```
+
 ### Projects
+
 | Method | Endpoint | Description | Access |
 |--------|----------|-------------|--------|
 | GET | `/api/projects` | Get all projects | Public |
@@ -45,7 +90,36 @@ A secure, robust, and scalable RESTful API built with Node.js, Express, and Mong
 | PUT | `/api/projects/:id` | Update a project | Protected |
 | DELETE | `/api/projects/:id` | Delete a project | Protected |
 
+#### Create Project (Protected)
+```http
+POST /api/projects
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "title": "My Project",
+  "description": "A cool project description",
+  "imageUrl": "https://example.com/image.jpg",
+  "repoUrl": "https://github.com/user/repo",
+  "liveUrl": "https://myproject.com",
+  "technologies": ["React", "Node.js", "MongoDB"]
+}
+```
+
+#### Update Project (Protected)
+```http
+PUT /api/projects/:id
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "title": "Updated Project Title",
+  "description": "Updated description"
+}
+```
+
 ### Blog Posts
+
 | Method | Endpoint | Description | Access |
 |--------|----------|-------------|--------|
 | GET | `/api/blog` | Get all blog posts | Public |
@@ -54,19 +128,65 @@ A secure, robust, and scalable RESTful API built with Node.js, Express, and Mong
 | PUT | `/api/blog/:id` | Update a blog post | Protected (Author only) |
 | DELETE | `/api/blog/:id` | Delete a blog post | Protected (Author only) |
 
+#### Create Blog Post (Protected)
+```http
+POST /api/blog
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "title": "My Blog Post",
+  "content": "Full content of the blog post...",
+  "excerpt": "Short summary of the post",
+  "coverImage": "https://example.com/cover.jpg",
+  "tags": ["tech", "programming"]
+}
+```
+
 ### Comments
+
 | Method | Endpoint | Description | Access |
 |--------|----------|-------------|--------|
 | GET | `/api/blog/:postId/comments` | Get comments for a post | Public |
 | POST | `/api/blog/:postId/comments` | Create a comment | Protected |
 | DELETE | `/api/blog/:postId/comments/:commentId` | Delete a comment | Protected (Author only) |
 
+#### Create Comment (Protected)
+```http
+POST /api/blog/:postId/comments
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "body": "This is a great post!"
+}
+```
+
 ### Contact
+
 | Method | Endpoint | Description | Access |
 |--------|----------|-------------|--------|
 | POST | `/api/contact` | Send a contact message | Public |
 | GET | `/api/contact` | Get all messages | Protected |
 | DELETE | `/api/contact/:id` | Delete a message | Protected |
+
+#### Send Contact Message
+```http
+POST /api/contact
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "message": "Hello, I would like to get in touch!"
+}
+```
+
+### Health Check
+
+| Method | Endpoint | Description | Access |
+|--------|----------|-------------|--------|
+| GET | `/api/health` | Check API status | Public |
 
 ## Data Models
 
@@ -132,7 +252,7 @@ A secure, robust, and scalable RESTful API built with Node.js, Express, and Mong
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/zxxxx-05/portfolio-backend.git
 cd portfolio-backend
 ```
 
@@ -161,54 +281,58 @@ npm start
 
 The API will be running at `http://localhost:5000`
 
-## Request Examples
+## Environment Variables
 
-### Register User
-```bash
-POST /api/users/register
-Content-Type: application/json
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `PORT` | Server port | No (default: 5000) |
+| `MONGODB_URI` | MongoDB connection string | Yes |
+| `JWT_SECRET` | Secret key for JWT signing | Yes |
+| `NODE_ENV` | Environment (development/production) | No |
+| `FRONTEND_URL` | Frontend URL for CORS | No |
 
-{
-  "username": "johndoe",
-  "email": "john@example.com",
-  "password": "password123"
-}
+## Authentication
+
+Protected routes require a valid JWT token in the Authorization header:
+
 ```
-
-### Login User
-```bash
-POST /api/users/login
-Content-Type: application/json
-
-{
-  "email": "john@example.com",
-  "password": "password123"
-}
-```
-
-### Create Project (Protected)
-```bash
-POST /api/projects
 Authorization: Bearer <your_jwt_token>
-Content-Type: application/json
+```
 
+Tokens are obtained by registering or logging in. Tokens expire after 30 days.
+
+## Error Handling
+
+The API returns consistent error responses:
+
+```json
 {
-  "title": "My Project",
-  "description": "A cool project",
-  "technologies": ["React", "Node.js"],
-  "repoUrl": "https://github.com/user/repo"
+  "message": "Error description",
+  "stack": "Stack trace (development only)"
 }
 ```
+
+Common HTTP status codes:
+- `200` - Success
+- `201` - Created
+- `400` - Bad Request
+- `401` - Unauthorized
+- `404` - Not Found
+- `500` - Server Error
 
 ## Deployment
 
-This API can be deployed to platforms like:
-- Render
-- Heroku
-- Railway
-- DigitalOcean
+This API is deployed on Vercel.
 
-Make sure to set all environment variables in your deployment platform.
+### Deploy to Vercel
+
+1. Install Vercel CLI: `npm i -g vercel`
+2. Run: `vercel`
+3. Set environment variables in Vercel dashboard:
+   - `MONGODB_URI`
+   - `JWT_SECRET`
+   - `NODE_ENV`
+   - `FRONTEND_URL`
 
 ## License
 
